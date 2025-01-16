@@ -7,10 +7,10 @@ go 1.22.6
 
 require (
 	github.com/Masterminds/semver/v3 v3.3.1
-	github.com/containers/common v0.61.0
-	github.com/containers/image/v5 v5.33.0
+	github.com/containers/common v0.61.1
+	github.com/containers/image/v5 v5.33.1
 	github.com/containers/ocicrypt v1.2.1
-	github.com/containers/storage v1.56.0
+	github.com/containers/storage v1.56.1
 	github.com/docker/distribution v2.8.3+incompatible
 	github.com/moby/sys/capability v0.4.0
 	github.com/opencontainers/go-digest v1.0.0
@@ -21,7 +21,7 @@ require (
 	github.com/spf13/pflag v1.0.5
 	github.com/stretchr/testify v1.10.0
 	golang.org/x/exp v0.0.0-20241217172543-b2144cdd0a67
-	golang.org/x/term v0.27.0
+	golang.org/x/term v0.28.0
 	gopkg.in/yaml.v3 v3.0.1
 )
 
@@ -131,7 +131,7 @@ require (
 	golang.org/x/net v0.33.0 // indirect
 	golang.org/x/oauth2 v0.23.0 // indirect
 	golang.org/x/sync v0.10.0 // indirect
-	golang.org/x/sys v0.28.0 // indirect
+	golang.org/x/sys v0.29.0 // indirect
 	golang.org/x/text v0.21.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240903143218-8af14fe29dc1 // indirect
 	google.golang.org/grpc v1.68.1 // indirect
