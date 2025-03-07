@@ -7,15 +7,6 @@
 %global debug_package %{nil}
 %endif
 
-# RHEL's default %%gobuild macro doesn't account for the BUILDTAGS variable, so we
-# set it separately here and do not depend on RHEL's go-[s]rpm-macros package
-# until that's fixed.
-# c9s bz: https://bugzilla.redhat.com/show_bug.cgi?id=2227328
-# c8s bz: https://bugzilla.redhat.com/show_bug.cgi?id=2227331
-%if %{defined rhel}
-%define gobuild(o:) go build -buildmode pie -compiler gc -tags="rpm_crashtraceback libtrust_openssl ${BUILDTAGS:-}" -ldflags "-linkmode=external -compressdwarf=false ${LDFLAGS:-} -B 0x$(head -c20 /dev/urandom|od -An -tx1|tr -d ' \\n') -extldflags '%__global_ldflags'" -a -v -x %{?**};
-%endif
-
 %global gomodulesmode GO111MODULE=on
 
 # No btrfs on RHEL
@@ -23,10 +14,15 @@
 %define build_with_btrfs 1
 %endif
 
+%if %{defined rhel}
+%define fips 1
+%endif
+
 # Only used in official koji builds
 # Copr builds set a separate epoch for all environments
 %if %{defined fedora}
 %define conditional_epoch 1
+%define fakeroot 1
 %else
 %define conditional_epoch 2
 %endif
@@ -77,12 +73,14 @@ Requires: containers-common >= 4:1-21
 Command line utility to inspect images and repositories directly on Docker
 registries without the need to pull them
 
+# NOTE: The tests subpackage is only intended for testing and will not be supported
+# for end-users and/or customers.
 %package tests
 Summary: Tests for %{name}
 
 Requires: %{name} = %{epoch}:%{version}-%{release}
-%if %{defined fedora}
 Requires: bats
+%if %{defined fakeroot}
 Requires: fakeroot
 %endif
 Requires: gnupg
@@ -127,6 +125,10 @@ export BUILDTAGS="$BASEBUILDTAGS $(hack/btrfs_tag.sh) $(hack/btrfs_installed_tag
 export BUILDTAGS="$BASEBUILDTAGS btrfs_noversion exclude_graphdriver_btrfs"
 %endif
 
+%if %{defined fips}
+export BUILDTAGS="$BUILDTAGS libtrust_openssl"
+%endif
+
 # unset LDFLAGS earlier set from set_build_flags
 LDFLAGS=''
 
@@ -145,6 +147,10 @@ cp -pav systemtest/* %{buildroot}/%{_datadir}/%{name}/test/system/
 
 #define license tag if not already defined
 %{!?_licensedir:%global license %doc}
+
+# Include this to silence rpmlint.
+# Especially annoying if you use syntastic vim plugin.
+%check
 
 %files
 %license LICENSE
